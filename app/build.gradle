@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        releaseConfig {
+            keyAlias 'key_majiabao'
+            keyPassword 'majiabao'
+            storePassword 'majiabao'
+            storeFile file('./../app_key.jks')
+        }
+    }
     compileSdkVersion 26
     buildToolsVersion "26.0.1"
     defaultConfig {
@@ -10,17 +18,25 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders = [APP_NAME: '主包名称'] // 配置主包的应用名称
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.releaseConfig
+        }
+        // 第一个马甲包
+        majiabaoOne.initWith(buildTypes.release) // 以release的配置来初始化马甲包配置
+        majiabaoOne {
+            applicationIdSuffix ".majiabaoOne" // 修改马甲包的applicationId，马甲包的application将为com.liunian.majiabaotest.majiabaoOne，即在原来的applicationId后加上配置内容
+            manifestPlaceholders = [APP_NAME: '第一个马甲包'] // 配置马甲包的应用名称
         }
     }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
